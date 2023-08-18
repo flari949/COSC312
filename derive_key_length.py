@@ -1,8 +1,8 @@
 # Riley Flanagan - 2011275 
 # COSC312 Assignment 1
-# 14/08/2023
+# 18/08/2023
 
-# Program to determine possible key lengths from Cryptonian ciphertext
+# Program to determine possible key lengths from Cryptonian ciphertext through elminating impossibilities
 
 # At any index within the key length, for all multiples of the key length (i.e. index 0 of every multiple of the keylength);
 # if every possible key neighbour difference results in an invalid output, across any index repeated over the ciphertext in multiples of the key length,
@@ -10,11 +10,12 @@
 
 def derive_key_length(ciphertext, min_len, max_len):
     clen = len(ciphertext)-1
+    # For every key length
     for klen in range(min_len, max_len+1):
         i = 0
         valid_len = True
-        # For every index of a keylength
         diffs = []
+        # For every index of a keylength, while every positional key difference has a valid arguement
         while i < klen and valid_len: 
             x = i
             valid_diffs = [0,1,2,3,4,5,6,7,8,9]
@@ -22,14 +23,17 @@ def derive_key_length(ciphertext, min_len, max_len):
             while x < clen and valid_len:
                 # Find invalid key value difference
                 invalid_diff = (int(ciphertext[x]) - int(ciphertext[x+1]))
-                # Cannot use modulo due to cyclic nature of Vigneres
+                # Cannot use modulo due to cyclic nature of Vigneres and negative values
                 if invalid_diff < 0:
                     invalid_diff += 10
                 if invalid_diff in valid_diffs:
+                    # Remove from list of potential differences
                     valid_diffs.remove(invalid_diff)
                 x += klen
+                # If not valid differences remain for an index
                 if not valid_diffs:
                     valid_len = False
+            # If key length index valid across ciphertext, record possible key differences
             if valid_diffs:
                 diffs.append(valid_diffs)
             i+=1
